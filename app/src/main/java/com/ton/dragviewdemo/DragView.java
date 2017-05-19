@@ -33,6 +33,8 @@ public class DragView extends View {
     private static Paint paint = new Paint();//画笔
     private Bitmap mBitmap = null;
     private String imgUrl;
+    private OnClickListener mClickListener;
+    private int mStartX,mStartY;
 
     public DragView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -76,6 +78,8 @@ public class DragView extends View {
                 if(!rect.contains(x, y)) {
                     return false;//没有在矩形上点击，不处理触摸消息
                 }
+                mStartX = x;
+                mStartY = y;
                 deltaX = x - rect.left;
                 deltaY = y - rect.top;
                 break;
@@ -123,9 +127,20 @@ public class DragView extends View {
                 }
                 oldl.union(rect);
                 invalidate(oldl);
+                if (Math.abs(mStartX - x) < 10
+                        && Math.abs(y - mStartY) < 10) {//捕捉点击事件
+                    if (mClickListener != null) {
+                        mClickListener.onClick(this);
+                    }
+                }
                 break;
         }
         return true;//处理了触摸消息，消息不再传递
+    }
+
+    @Override
+    public void setOnClickListener(OnClickListener l) {
+        this.mClickListener = l;
     }
 
     /***
